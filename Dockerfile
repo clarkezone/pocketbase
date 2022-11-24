@@ -13,10 +13,11 @@ COPY go.mod .
 COPY go.sum .
 RUN go mod download
 COPY . .
-RUN go build -ldflags "-s -w -X github.com/pocketbase/pocketbase.Version=$BUILD_VERSION" -o pocketbase
+#RUN go build -ldflags="-s -w -X github.com/pocketbase/pocketbase.Version=$BUILD_VERSION" -o pocketbase
+RUN go build -ldflags="-s -w -X github.com/pocketbase/pocketbase.Version=$BUILD_VERSION" -o pocketbase examples/base/main.go 
 #Stage 2 build final image
 FROM docker.io/alpine:3.14
 RUN apk update
 RUN apk --no-cache add ca-certificates
 COPY --from=builder /build/pocketbase .
-ENTRYPOINT ["/pocketbase"]
+ENTRYPOINT ["./pocketbase"]
