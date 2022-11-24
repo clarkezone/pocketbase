@@ -2,9 +2,7 @@
 #docker.io prefix required by podman
 # use podman build . --build-arg BUILD_VERSION="jikjikjik" --build-arg BUILD_HASH="0001100"
 FROM docker.io/golang:alpine as builder
-ARG BUILD_HEADTAG
-ARG BUILD_HASH
-ARG BUILD_BRANCH
+ARG BUILD_VERSION
 RUN mkdir /build
 WORKDIR /build
 RUN apk --no-cache add gcc build-base git
