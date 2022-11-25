@@ -5,17 +5,17 @@ FROM docker.io/golang:alpine as builder
 ARG BUILD_VERSION
 RUN mkdir /build
 WORKDIR /build
-RUN apk --no-cache add gcc build-base git
+# RUN apk --no-cache add gcc build-base git
 # RUN go install github.com/goreleaser/goreleaser@latest
 COPY go.mod .
 COPY go.sum .
 RUN go mod download
 COPY . .
 #RUN go build -ldflags="-s -w -X github.com/pocketbase/pocketbase.Version=$BUILD_VERSION" -o pocketbase
-RUN go build -ldflags="-s -w -X github.com/pocketbase/pocketbase.Version=$BUILD_VERSION" -o pocketbase examples/base/main.go 
+RUN CGO_ENABLED=0 go build -ldflags="-s -w -X github.com/pocketbase/pocketbase.Version=$BUILD_VERSION" -o pocketbase examples/base/main.go 
 #Stage 2 build final image
 FROM docker.io/alpine:3.14
 RUN apk update
 RUN apk --no-cache add ca-certificates
 COPY --from=builder /build/pocketbase .
-ENTRYPOINT ["./pocketbase"]
+CMD ./pocketbase serve --http 0.0.0.0:8080 --dir /data
